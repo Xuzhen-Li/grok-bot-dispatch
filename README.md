@@ -1,10 +1,10 @@
 # grok-bot-dispatch
 
-Cursor skill for writing a prompt to [Grok Bot](https://x.ai/bot) when Primary is the front door.
+A Cursor skill for staffing [Grok Bot](https://x.ai/bot). Primary is the front door. Project bots live in Unassigned. Shared workers live in Role.
 
-Unassigned bots own projects. The role section has 16 shared bots. Other bots may call them and change their roles. When several projects run at once, one role bot is not given two conflicting roles or two clashing tasks.
+A role is an assignment for one task, written in the prompt. It is not a job title locked to a bot's name. When several projects run at once, one role bot keeps one persona and one task. Retask it after that project lets go.
 
-The skill does not create bots and does not log in to the Grok Bot app.
+The skill does not create bots and does not log in to the Grok Bot app. It does not assume a particular sidebar of names.
 
 ## Install
 
@@ -20,9 +20,10 @@ This skill is not auto-attached. The agent must read `SKILL.md` first.
 
 ```text
 Read grok-bot-dispatch/SKILL.md and write a Primary prompt.
-Project: paper-viz. Owner: the Unassigned bot for that repo.
-Outcome: one pull request that fixes the gallery badge.
-Role: 文档员 writes, 审查员 reviews. 维修员 is busy on another project.
+Project: gallery. Owner: the Unassigned bot for that repo.
+Outcome: one pull request that fixes the badge.
+Role: the draft seat writes, the review seat reviews.
+The ops seat is busy on another project until that job finishes.
 ```
 
 The agent returns one block to paste into Primary. A two-project case is in [examples/two-projects.md](examples/two-projects.md).

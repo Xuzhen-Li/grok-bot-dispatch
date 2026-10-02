@@ -1,10 +1,10 @@
 ---
 name: grok-bot-dispatch
 description: >-
-  Writes a paste-ready prompt for Grok Bot when Primary is the front door,
-  Unassigned bots own projects, and sixteen shared role bots must not clash.
-  Use when the user asks for a grokbot prompt, a Primary Bot handoff, a
-  multi-bot task, or dispatch across Unassigned and role.
+  Writes a paste-ready Grok Bot prompt using a shared role pool. Primary is
+  the front door, Unassigned bots own projects, and role bots are retasked
+  per task without a clash. Use when the user asks for a grokbot prompt, a
+  Primary handoff, or multi-bot work across projects.
 disable-model-invocation: true
 ---
 
@@ -12,53 +12,47 @@ disable-model-invocation: true
 
 Write one prompt the user can paste to Primary. Do not create a bot. Do not ask the user to choose. Primary decides.
 
-## Roster
+This is a staffing strategy. It does not depend on any one sidebar of names.
 
-Primary is the front door. Daily questions, coordination, and wrap-up go to Primary. For a specialty such as GitHub, paper-viz, or prose polish, Primary calls the matching bot.
+## How to set a role
 
-Unassigned bots own projects. Hand the task to the Unassigned bot for that project.
+A role is an assignment for one task, written in the prompt. It is not a permanent job title baked into the bot's name.
 
-Role has 16 bots. Any bot may call them, and their roles may be changed. A fixed persona is taken from role. A sidebar name is the current label, not a permanent job. A `paper-viz-` prefix does not make a second seat.
+Keep two sections:
 
-| # | Sidebar label | Usual persona |
-|---|---------------|----------------|
-| 1 | 流程图员 | draw.io and flow diagrams |
-| 2 | 审查员 | Pull-request structure. Never reviews a pull request it wrote. |
-| 3 | R绘图员 | Data figures |
-| 4 | 语言润色-英文 | English prose |
-| 5 | 语言润色-命令旁白 | Command-line narration |
-| 6 | 设计-课堂路径 | Learning paths |
-| 7 | 设计-信息架构 | Information structure of a document or repo |
-| 8 | 语言润色-中文 | Chinese prose |
-| 9 | 文档员 | README, skill docs, profile structure. Does not edit plot scripts. |
-| 10 | 仓库管家 | Cross-repo links, placeholder repos, issues. Does not archive, rename, delete, or change visibility. |
-| 11 | 维修员 | Actions, Pages, repo settings. No force-push. Older notes call this seat 运维员. |
-| 12 | 体检员 | HTTP, gallery, catalog, links. Report only. Does not edit files. |
-| 13 | 设计-图文节奏 | Type size, frame, spacing, readability of a preview |
-| 14 | 两仓注释圆桌 | Annotation comparison across two repos |
-| 15 | 两仓科学审阅 | Whether the science is right. Structure review stays with 审查员. |
-| 16 | 遗传学专家 | Bioinformatics content. Not repo chores. |
+- **Unassigned.** One bot per project. That bot owns the project. Hand the task to it.
+- **Role.** A small shared pool. Any bot may call one. The caller states the persona for this task, then releases the bot when the task is done.
 
-The bot that writes and the bot that reviews must be two different bots.
+Name a role bot after the kind of seat it is (`review`, `draft`, `polish`), or leave the name generic. Do not name it after a project. A project prefix on a label is leftover paint, not a second seat.
 
-A logged-in Gemini Pro web bot is called by Primary for a plan, a comparison, or a visual check. It does not log in to GitHub, open a pull request, or edit files.
+To give a bot a persona, say so in the task:
 
-Collaborator bots do not ask the user. If a choice is open, Primary picks a rule-allowed option and continues.
+```text
+Role bot <sidebar label>: reviewer for this pull request only. Do not write it. Release when the review is filed.
+```
+
+The next project may give that same bot a different persona after the release. It does not get both personas at once.
+
+The bot that writes and the bot that reviews are two different role bots.
+
+A planner that only looks, such as a logged-in Gemini Pro web bot, may be called by Primary for a plan, a comparison, or a visual check. It does not log in to GitHub, open a pull request, or edit files.
+
+Collaborator bots do not ask the user. Primary picks a rule-allowed option and continues.
 
 ## Several projects at once
 
-Role bots are shared. When more than one project is in progress:
+The role pool is shared.
 
-- Do not give one role bot two different roles at the same time.
-- Do not give one role bot two tasks that clash.
-- Retask that bot for another project only after the first project has finished with it.
-- If the needed seat is busy, say so in the prompt and tell Primary to wait, or to use a free seat. Do not create a bot to dodge the clash.
+- One role bot, one persona, one task.
+- Do not hand it a second persona, or a task that clashes with the one it already has.
+- Retask it only after the project that holds it has finished with it.
+- If the seat is busy, tell Primary to wait or to use a free seat. Do not create a bot to skip the wait.
 
-One project may use several role bots at once. Primary splits the work, collects it, and decides.
+One project may use several role bots at once. Primary splits the work, collects it, and decides. Specialties such as GitHub, a figure repo, or prose polish are calls Primary makes. They are not new bots.
 
 ## Prompt to paste
 
-Address Primary. Name the project, the Unassigned owner, the outcome, and each role bot with the persona it keeps for this task. State which seats stay untouched because another project holds them.
+Address Primary. Name the project, the Unassigned owner, the outcome, and each role bot with the persona it holds for this task only. Name seats another project still holds.
 
 ```text
 You are Primary. You are the front door. Decide and finish. Do not ask me. Do not create a bot.
@@ -69,7 +63,7 @@ Outcome: <what "done" is>
 Sources: <repos, links, files>
 Do not: <forbidden actions>
 
-Role bots for this task only. Release each one when the task is done.
+Role bots for this task only. A role is this assignment, not a permanent title. Release each bot when the task is done.
 - <sidebar label>: <persona for this task>
 - <sidebar label>: <persona for this task>
 
@@ -77,9 +71,9 @@ Busy seats, do not retask:
 - <sidebar label>: held by project <name> until <condition>
 
 The bot that writes and the bot that reviews are different bots.
-Call the logged-in Gemini Pro web bot only for a plan, a comparison, or a visual check. It does not log in to GitHub, open a pull request, or edit files.
+Call a look-only bot, such as the logged-in Gemini Pro web bot, only for a plan, a comparison, or a visual check. It does not log in to GitHub, open a pull request, or edit files.
 
 Report only the result: links and status. No question for me.
 ```
 
-Drop anything that does not apply. Keep the sidebar labels exactly as they appear in the app.
+Drop any line that does not apply. Use the sidebar labels as they appear in the app.
